@@ -15,6 +15,7 @@ module CriteoApi
     DEFAULT_VERSION = :v201010
     DEFAULT_ENVIRONMENT = :PRODUCTION
     LATEST_VERSION = :v201010
+    DEFAULT_NS = :v20
 
     # Set other constants
     API_NAME = 'CriteoApi'
@@ -80,6 +81,10 @@ module CriteoApi
 
     def self.headers_config
       @@headers_config
+    end
+
+    def self.default_ns
+      DEFAULT_NS
     end
 
     # Get the download URL for Ad Hoc reports.

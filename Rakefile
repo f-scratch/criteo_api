@@ -26,13 +26,14 @@ task :generate, :version, :service do |_, args|
     # setting for criteo
     extension = "asmx"
     ns_prefix = "s"
+    wsdl_provider = :criteo
 
     wsdls = CriteoApi::ApiConfig.get_wsdls(version, extension)
     wsdls.each do |service_name, wsdl_url|
       next unless service.nil? or service_name.eql?(service)
       logger.info('Processing %s at [%s]...' % [service_name, wsdl_url])
       generator = Shampoohat::Build::SavonGenerator.new(
-          wsdl_url, code_path, api_config.api_name, version, service_name, ns_prefix)
+          wsdl_url, code_path, api_config.api_name, version, service_name, ns_prefix, wsdl_provider, api_config.default_ns.to_s)
       generator.process_wsdl()
     end
   end

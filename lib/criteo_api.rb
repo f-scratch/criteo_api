@@ -1,5 +1,5 @@
 require 'shampoohat/api'
-require 'shampoohat/savon_headers/oauth_header_handler'
+require 'shampoohat/savon_headers/criteo_header_handler'
 require 'shampoohat/savon_headers/nothing_header_handler'
 require 'criteo_api/api_config'
 require 'criteo_api/credential_handler'
@@ -10,10 +10,15 @@ module CriteoApi
 
   class Api < Shampoohat::Api
 
+    attr_reader :header_info
+    attr_reader :auth_method
+
     # Constructor for API.
     def initialize(provided_config = nil)
       super(provided_config)
       @credential_handler = CriteoApi::CredentialHandler.new(@config)
+      @header_info = nil
+      @auth_method = :NOTHING
     end
 
     # Getter for the API service configurations
@@ -34,10 +39,9 @@ module CriteoApi
     # - SOAP header handler
     #
     def soap_header_handler(auth_handler, version, header_ns, default_ns)
-      auth_method = @config.read('authentication.method', :OAUTH2)
       handler_class = case auth_method
-        when :OAUTH2, :OAUTH2_JWT
-          Shampoohat::SavonHeaders::OAuthHeaderHandler
+        when :CRITEO
+          Shampoohat::SavonHeaders::CriteoHeaderHandler
         when :NOTHING
           Shampoohat::SavonHeaders::NothingHeaderHandler
         else
@@ -45,7 +49,7 @@ module CriteoApi
               "Unknown auth method: %s" % auth_method
         end
       return handler_class.new(@credential_handler, auth_handler, header_ns,
-                                  default_ns, version)
+                                  default_ns, version, header_info)
     end
 
     # Helper method to provide a simple way of doing a validate-only operation
@@ -130,6 +134,14 @@ module CriteoApi
     #
     def partial_failure=(value)
       @credential_handler.partial_failure = value
+    end
+
+    def header_info=(value)
+      @header_info = value
+    end
+
+    def auth_method=(value)
+      @auth_method = value
     end
 
     private
