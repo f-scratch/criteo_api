@@ -1,35 +1,104 @@
-# CriteoApi
+# Criteo API Client Library
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/criteo_api`. To experiment with that code, run `bin/console` for an interactive prompt.
+This ruby gem is the client library for [Criteo API](http://kb.criteo.com/advertising/index.php?action=artikel&cat=9&id=27&artlang=en) .
 
-TODO: Delete this and the text above, and describe your gem
+It contains full support for all API services with full stubs, and a simplified
+programming interface that lets you handle everything in native Ruby
+collections.
 
-## Installation
 
-Add this line to your application's Gemfile:
+# Docs for Users
 
-```ruby
-gem 'criteo_api'
+## 1 - Installation
+
+`criteo_api` is ruby gems.
+
+Install them using the gem install command:
+
+```Gemfile
+gem 'criteo_api', git: "git@github.com:f-scratch/criteo_api.git"
 ```
 
-And then execute:
+The gem also depends on the
+Shampoohat library, which will be installed automatically.
 
-    $ bundle
+The following gem libraries are required:
 
-Or install it yourself as:
+ - savon
+ - shampoohat
 
-    $ gem install criteo_api
+## 2 - Using the client library
 
-## Usage
+By default, the API uses a config file in `ENV['HOME']/criteo_api.yml`.
 
-TODO: Write usage instructions here
+You can also pass the API a manually constructed config hash like:
 
-## Development
+    criteo = CriteoApi::Api.new({
+      :authentication => {
+          :method => 'OAuth2',
+          :oauth2_client_id => 'INSERT_OAUTH2_CLIENT_ID_HERE',
+          :oauth2_client_secret => 'INSERT_OAUTH2_CLIENT_SECRET_HERE',
+          :developer_token => 'DEVELOPER_TOKEN',
+          :client_customer_id => '012-345-6789',
+          :user_agent => 'Ruby Sample'
+      },
+      :service => {
+        :environment => 'PRODUCTION'
+      }
+    })
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+Once you have all the requisite setup complete, you're ready to make an API
+call.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+The basics of making a request are:
 
-## Contributing
+ 1. Include the library with `require`:
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/criteo_api.
+        require 'creteo_api'
+
+ 2. Create an API instance:
+
+        criteo = CriteoApi::Api.new
+
+ 3. Specify which service you're looking to use, and which version:
+
+        criteo_srv = criteo.service(:AdvertiserService, API_VERSION)
+
+ 4. You should now be able to just use the API methods in the returned object:
+
+        criteo_srv.get_account
+
+# Docs for Developers
+
+## Rake targets
+
+To regenerate all the stubs for all versions if needed:
+
+    $ rake generate
+
+To target a specific version:
+
+    $ rake generate[version]
+
+For example:
+
+    $ rake generate[v201502]
+
+To target a specific service in a specific version:
+
+    $ rake generate[version,service]
+
+For example:
+
+    $ rake generate[v201502,CampaignService]
+
+To build the gems:
+
+    $ gem build criteo_api.gemspec
+
+To run unit tests on the library:
+
+    $ rake test
+
+## Authors
+- Junya Wako(junwako@gmail.com)
