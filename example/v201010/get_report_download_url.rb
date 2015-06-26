@@ -11,7 +11,7 @@ def client_login
   return response[:client_login_result]
 end
 
-def get_account
+def get_report_download_url
   auth_token = client_login
   ns_index = "v20"
   criteo = CriteoApi::Api.new
@@ -20,17 +20,15 @@ def get_account
                         "#{ns_index}:appToken"      => ENV["CRITEO_APPTOKEN"],
                         "#{ns_index}:clientVersion" => "3.6"}
   criteo_srv = criteo.service(:AdvertiserService, API_VERSION)
-  response = criteo_srv.get_account
-  puts "Account Info:"
-  response[:get_account_result].each do |key, value|
-    puts "[#{key}] : #{value}"
-  end
+  job_id = 784498858
+  response = criteo_srv.get_report_download_url(job_id)
+  puts "Download URL of Job ID[#{job_id}] : #{response[:job_url]}"
 end
 
 if __FILE__ == $0
   API_VERSION = :v201010
   begin
-    get_account
+    get_report_download_url
   rescue Shampoohat::Errors::ApiException => e
     puts e.message
   end

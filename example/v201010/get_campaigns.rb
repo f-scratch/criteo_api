@@ -11,7 +11,7 @@ def client_login
   return response[:client_login_result]
 end
 
-def get_account
+def get_campaigns
   auth_token = client_login
   ns_index = "v20"
   criteo = CriteoApi::Api.new
@@ -20,17 +20,28 @@ def get_account
                         "#{ns_index}:appToken"      => ENV["CRITEO_APPTOKEN"],
                         "#{ns_index}:clientVersion" => "3.6"}
   criteo_srv = criteo.service(:AdvertiserService, API_VERSION)
-  response = criteo_srv.get_account
-  puts "Account Info:"
-  response[:get_account_result].each do |key, value|
-    puts "[#{key}] : #{value}"
+  response = criteo_srv.get_campaigns(campaign_params)
+  response[:get_campaigns_result][:campaign].each_with_index do |campaign, i|
+    str = []
+    campaign.each do |key, value|
+      str << "[#{key}] : #{value}" if key == :campaign_id || key == :campaign_name || key == :status
+    end
+    puts "NO.#{i+1} " + str.join(", ")
   end
+end
+
+def campaign_params
+  {
+    campaign_i_ds: {int: []},
+    budget_i_ds: {int: []},
+    campaign_status: {campaign_status: ["RUNNING"]}
+  }
 end
 
 if __FILE__ == $0
   API_VERSION = :v201010
   begin
-    get_account
+    get_campaigns
   rescue Shampoohat::Errors::ApiException => e
     puts e.message
   end

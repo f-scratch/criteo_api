@@ -1,6 +1,6 @@
 require 'shampoohat/api'
 require 'shampoohat/savon_headers/criteo_header_handler'
-require 'shampoohat/savon_headers/nothing_header_handler'
+require 'shampoohat/savon_headers/criteo_login_header_handler'
 require 'criteo_api/api_config'
 require 'criteo_api/credential_handler'
 require 'criteo_api/errors'
@@ -18,7 +18,7 @@ module CriteoApi
       super(provided_config)
       @credential_handler = CriteoApi::CredentialHandler.new(@config)
       @header_info = nil
-      @auth_method = :NOTHING
+      @auth_method = :CRITEO
     end
 
     # Getter for the API service configurations
@@ -40,10 +40,10 @@ module CriteoApi
     #
     def soap_header_handler(auth_handler, version, header_ns, default_ns)
       handler_class = case auth_method
+        when :CRITEO_LOGIN
+          Shampoohat::SavonHeaders::CriteoLoginHeaderHandler
         when :CRITEO
           Shampoohat::SavonHeaders::CriteoHeaderHandler
-        when :NOTHING
-          Shampoohat::SavonHeaders::NothingHeaderHandler
         else
           raise Shampoohat::Errors::AuthError,
               "Unknown auth method: %s" % auth_method

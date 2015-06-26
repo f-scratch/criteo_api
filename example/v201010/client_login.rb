@@ -5,10 +5,10 @@ require 'criteo_api'
 
 def client_login
   criteo = CriteoApi::Api.new
-  ns_index = "v20"
-  criteo.auth_method = :NOTHING
+  criteo.auth_method = :CRITEO_LOGIN
   criteo_srv = criteo.service(:AdvertiserService, API_VERSION)
-  puts criteo_srv.client_login('hoge','fuga','mogu')
+  response = criteo_srv.client_login(ENV["CRITEO_ID"], ENV["CRITEO_PASSWD"], 'test_source')
+  puts "Logged in successfully: [authToken] '%s' " % response[:client_login_result]
 end
 
 if __FILE__ == $0
