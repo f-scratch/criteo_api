@@ -61,37 +61,5 @@ module CriteoApi
       end
     end
 
-    # Error for invalid credentials sush as malformed ID.
-    class BadCredentialsError < Shampoohat::Errors::ApiException
-    end
-
-    # Error for malformed report definition.
-    class InvalidReportDefinitionError < Shampoohat::Errors::ApiException
-    end
-
-    # Error for server-side report error.
-    class ReportError < Shampoohat::Errors::ApiException
-      attr_reader :http_code
-
-      def initialize(http_code, message)
-        super(message)
-        @http_code = http_code
-      end
-    end
-
-    # Error for server-side report XML error.
-    class ReportXmlError < ReportError
-      attr_reader :type, :trigger, :field_path
-
-      def initialize(http_code, error_type, error_trigger, error_field_path)
-        message =
-            "HTTP code: %d, error type: '%s', trigger: '%s', field path: '%s'" %
-            [http_code, error_type, error_trigger, error_field_path]
-        super(http_code, message)
-        @type = error_type
-        @trigger = error_trigger
-        @field_path = error_field_path
-      end
-    end
   end
 end

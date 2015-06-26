@@ -23,12 +23,13 @@ def schedule_report_job
   response = criteo_srv.schedule_report_job(report_job_params)
   response[:job_response].each do |key, value|
     puts "[#{key}] : #{value}" if key == :job_id || key == :job_status
+    puts "[selected_columns] : #{value[:selected_columns][:report_column].join(',')}" if key == :report_job && !value[:selected_columns].nil?
   end
 end
 
 def report_job_params
   {
-    :selected_columns => {:report_column => []},
+    :selected_columns => {:report_column => ["clicks", "impressions"]},
     :report_selector => {:category_i_ds => {int: []}, :campaign_i_ds => {int: []}, :banner_i_ds => {int: []}},
     :report_type => 'Campaign',
     :aggregation_type => 'Daily',
